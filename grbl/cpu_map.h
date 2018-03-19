@@ -52,10 +52,23 @@
   #define DIRECTION_MASK    ((1<<X_DIRECTION_BIT)|(1<<Y_DIRECTION_BIT)|(1<<Z_DIRECTION_BIT)|(1<<A_DIRECTION_BIT)) // All direction bits
 
   // Define stepper driver enable/disable output pin.
-  #define STEPPERS_DISABLE_DDR    DDRB
-  #define STEPPERS_DISABLE_PORT   PORTB
-  #define STEPPERS_DISABLE_BIT    0  // Uno Digital Pin 8
-  #define STEPPERS_DISABLE_MASK   (1<<STEPPERS_DISABLE_BIT)
+  #define STEPPERS_DISABLE_DDR_X    DDRC
+  #define STEPPERS_DISABLE_PORT_X   PORTC
+  #define STEPPERS_DISABLE_BIT_X    0  // Uno Digital Pin A0
+
+  #define STEPPERS_DISABLE_DDR_Y    DDRB
+  #define STEPPERS_DISABLE_PORT_Y   PORTB
+  #define STEPPERS_DISABLE_BIT_Y    0  // Uno Digital Pin 8
+
+  #define STEPPERS_DISABLE_DDR_Z    DDRC
+  #define STEPPERS_DISABLE_PORT_Z   PORTC
+  #define STEPPERS_DISABLE_BIT_Z    1  // Uno Digital Pin A1
+
+  #define STEPPERS_DISABLE_DDR_A    DDRC
+  #define STEPPERS_DISABLE_PORT_A   PORTC
+  #define STEPPERS_DISABLE_BIT_A    2  // Uno Digital Pin A2
+
+  //#define STEPPERS_DISABLE_MASK   (1<<STEPPERS_DISABLE_BIT)
 
   // Define homing/hard limit switch input pins and limit interrupt vectors.
   // NOTE: All limit bit pins must be on the same port, but not on a port with other input pins (CONTROL).
@@ -63,11 +76,11 @@
   #define LIMIT_PIN        PINB
   #define LIMIT_PORT       PORTB
   #define X_LIMIT_BIT      1  // Uno Digital Pin 9
-  #define Y_LIMIT_BIT      2  // Uno Digital Pin 10
+  #define Y_LIMIT_BIT      1  // Uno Digital Pin 10
   #ifdef VARIABLE_SPINDLE // Z Limit pin and spindle enabled swapped to access hardware PWM on Pin 11.
     #define Z_LIMIT_BIT	   4 // Uno Digital Pin 12
   #else
-    #define Z_LIMIT_BIT    3  // Uno Digital Pin 11
+    #define Z_LIMIT_BIT    1  // Uno Digital Pin 11
   #endif
   #define LIMIT_MASK       ((1<<X_LIMIT_BIT)|(1<<Y_LIMIT_BIT)|(1<<Z_LIMIT_BIT)) // All limit bits
   #define LIMIT_INT        PCIE0  // Pin change interrupt enable pin

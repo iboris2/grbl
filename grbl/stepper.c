@@ -211,12 +211,20 @@ static st_prep_t prep;
 
 // Stepper state initialization. Cycle should only start if the st.cycle_start flag is
 // enabled. Startup init and limits call this function but shouldn't start the cycle.
-void st_wake_up()
+void st_wake_up(uint8_t axis)
 {
   // Enable stepper drivers.
-  if (bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)) { STEPPERS_DISABLE_PORT |= (1<<STEPPERS_DISABLE_BIT); }
-  else { STEPPERS_DISABLE_PORT &= ~(1<<STEPPERS_DISABLE_BIT); }
-
+  if (bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)) {
+    axis = ~axis;
+  }
+  if (bit_istrue(axis, (1 << X_AXIS) )) { STEPPERS_DISABLE_PORT_X &= ~(1<<STEPPERS_DISABLE_BIT_X); }
+  else { STEPPERS_DISABLE_PORT_X |= 1<<STEPPERS_DISABLE_BIT_X; }
+  if (bit_istrue(axis, (1 << Y_AXIS) )) { STEPPERS_DISABLE_PORT_Y &= ~(1<<STEPPERS_DISABLE_BIT_Y); }
+  else { STEPPERS_DISABLE_PORT_Y |= 1<<STEPPERS_DISABLE_BIT_Y; }
+  if (bit_istrue(axis, (1 << Z_AXIS) )) { STEPPERS_DISABLE_PORT_Z &= ~(1<<STEPPERS_DISABLE_BIT_Z); }
+  else { STEPPERS_DISABLE_PORT_Z |= 1<<STEPPERS_DISABLE_BIT_Z; }
+  if (bit_istrue(axis, (1 << A_AXIS) )) { STEPPERS_DISABLE_PORT_A &= ~(1<<STEPPERS_DISABLE_BIT_A); }
+  else { STEPPERS_DISABLE_PORT_A |= 1<<STEPPERS_DISABLE_BIT_A; }
   // Initialize stepper output bits to ensure first ISR call does not step.
   st.step_outbits = step_port_invert_mask;
 
@@ -252,11 +260,21 @@ void st_go_idle()
     delay_ms(settings.stepper_idle_lock_time);
     pin_state = true; // Override. Disable steppers.
   }
-  if (bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)) { pin_state = !pin_state; } // Apply pin invert.
-  if (pin_state) { STEPPERS_DISABLE_PORT |= (1<<STEPPERS_DISABLE_BIT); }
-  else { STEPPERS_DISABLE_PORT &= ~(1<<STEPPERS_DISABLE_BIT); }
+  if (pin_state) {
+    if (bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)) { // Apply pin invert.
+      STEPPERS_DISABLE_PORT_X &= ~(1<<STEPPERS_DISABLE_BIT_X);
+      STEPPERS_DISABLE_PORT_Y &= ~(1<<STEPPERS_DISABLE_BIT_Y);
+      STEPPERS_DISABLE_PORT_Z &= ~(1<<STEPPERS_DISABLE_BIT_Z);
+      STEPPERS_DISABLE_PORT_A &= ~(1<<STEPPERS_DISABLE_BIT_A);
+    }
+    else {
+      STEPPERS_DISABLE_PORT_X |= (1<<STEPPERS_DISABLE_BIT_X);
+      STEPPERS_DISABLE_PORT_Y |= (1<<STEPPERS_DISABLE_BIT_Y);
+      STEPPERS_DISABLE_PORT_Z |= (1<<STEPPERS_DISABLE_BIT_Z);
+      STEPPERS_DISABLE_PORT_A |= (1<<STEPPERS_DISABLE_BIT_A);
+    }
+  }
 }
-
 
 /* "The Stepper Driver Interrupt" - This timer interrupt is the workhorse of Grbl. Grbl employs
    the venerable Bresenham line algorithm to manage and exactly synchronize multi-axis moves.
@@ -521,7 +539,10 @@ void stepper_init()
 {
   // Configure step and direction interface pins
   setup_pins(STEP_MASK);
-  STEPPERS_DISABLE_DDR |= 1<<STEPPERS_DISABLE_BIT;
+  STEPPERS_DISABLE_DDR_X |= 1<<STEPPERS_DISABLE_BIT_X;
+  STEPPERS_DISABLE_DDR_Y |= 1<<STEPPERS_DISABLE_BIT_Y;
+  STEPPERS_DISABLE_DDR_Z |= 1<<STEPPERS_DISABLE_BIT_Z;
+  STEPPERS_DISABLE_DDR_A |= 1<<STEPPERS_DISABLE_BIT_A;
   setup_pins(DIRECTION_MASK)
 
   // Configure Timer 1: Stepper Driver Interrupt

@@ -42,7 +42,7 @@ uint8_t jog_execute(plan_line_data_t *pl_data, parser_block_t *gc_block)
     if (plan_get_current_block() != NULL) { // Check if there is a block to execute.
       sys.state = STATE_JOG;
       st_prep_buffer();
-      st_wake_up();  // NOTE: Manual start. No state machine required.
+      st_wake_up(0xFF);  // NOTE: Manual start. No state machine required.
     }
   }
 

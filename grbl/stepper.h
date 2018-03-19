@@ -30,7 +30,8 @@
 void stepper_init();
 
 // Enable steppers, but cycle does not start unless called by motion control or realtime command.
-void st_wake_up();
+// axis axis bit_field (ex 1 << AXIS_X)
+void st_wake_up(uint8_t axis);
 
 // Immediately disables steppers
 void st_go_idle();

@@ -356,7 +356,7 @@ void protocol_exec_rt_system()
               sys.suspend = SUSPEND_DISABLE; // Break suspend state.
               sys.state = STATE_CYCLE;
               st_prep_buffer(); // Initialize step segment buffer before beginning cycle.
-              st_wake_up();
+              st_wake_up(0xFF);
             } else { // Otherwise, do nothing. Set and resume IDLE state.
               sys.suspend = SUSPEND_DISABLE; // Break suspend state.
               sys.state = STATE_IDLE;
